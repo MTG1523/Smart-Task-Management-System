@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — TaskFlow{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <span class="logo-icon">✓</span>
+      <span>TaskFlow</span>
+    </div>
+    <nav class="sidebar__nav">
+      <a href="#" class="nav-item nav-item--active" data-filter="all">All Tasks</a>
+      <a href="#" class="nav-item" data-filter="pending">Pending</a>
+      <a href="#" class="nav-item" data-filter="in_progress">In Progress</a>
+      <a href="#" class="nav-item" data-filter="completed">Completed</a>
+    </nav>
+    <div class="sidebar__user">
+      <span class="user-avatar">{{ user.username[0].upper() }}</span>
+      <span class="user-name">{{ user.username }}</span>
+      <a href="{{ url_for('logout') }}" class="logout-btn" title="Logout">⎋</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main-content">
+
+    <!-- Header -->
+    <header class="top-bar">
+      <h2 id="page-title">All Tasks</h2>
+      <div class="top-bar__actions">
+        <div id="ws-indicator" class="ws-dot ws-dot--connecting" title="Connecting…"></div>
+        <button class="btn btn--primary" id="open-modal-btn">+ New Task</button>
+      </div>
+    </header>
+
+    <!-- Analytics Cards -->
+    <section class="analytics-grid" id="analytics-section">
+      <div class="stat-card">
+        <span class="stat-label">Total</span>
+        <span class="stat-value" id="stat-total">—</span>
+      </div>
+      <div class="stat-card stat-card--green">
+        <span class="stat-label">Completed</span>
+        <span class="stat-value" id="stat-completed">—</span>
+      </div>
+      <div class="stat-card stat-card--yellow">
+        <span class="stat-label">In Progress</span>
+        <span class="stat-value" id="stat-inprogress">—</span>
+      </div>
+      <div class="stat-card stat-card--red">
+        <span class="stat-label">Pending</span>
+        <span class="stat-value" id="stat-pending">—</span>
+      </div>
+      <div class="stat-card stat-card--blue">
+        <span class="stat-label">Completion %</span>
+        <span class="stat-value" id="stat-pct">—</span>
+      </div>
+    </section>
+
+    <!-- Progress Bar -->
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <!-- Task list -->
+    <section class="task-section">
+      <div class="task-grid" id="task-grid">
+        <div class="empty-state" id="empty-state">
+          <p>No tasks yet. Click <strong>+ New Task</strong> to get started.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Notification toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal__header">
+      <h3 id="modal-title">New Task</h3>
+      <button class="modal__close" id="modal-close">✕</button>
+    </div>
+    <div class="modal__body">
+      <input type="hidden" id="edit-task-id" />
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" id="task-title" placeholder="Task title" />
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="task-desc" placeholder="Optional description…" rows="3"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="task-priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="task-status">
+            <option value="pending" selected>Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" id="modal-cancel">Cancel</button>
+      <button class="btn btn--primary" id="modal-save">Save Task</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}?v={{ range(1000,9999) | random }}"></script>
+<script>
+  const CURRENT_USER_ID = {{ user.id }};
+</script>
+{% endblock %}
